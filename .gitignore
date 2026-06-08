@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-dados_mei.xlsx
+dados_mei*.xlsx
 *.log
 .env
 .env.*
