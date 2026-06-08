@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Notas Fiscais</h1>
+<p class="sub">Provedor atual: <strong>{{ provedor }}</strong>{% if provedor == 'mock' %} (modo teste — não emite nota real){% endif %}.</p>
+
+{% if provedor == 'mock' %}
+<div class="alert atencao">
+  Para emitir notas válidas: contrate um provedor (Focus NFe, NFE.io, PlugNotas...),
+  cadastre seu certificado A1 e configure o token em <code>mei/config.py</code>.
+  MEI de serviço usa NFS-e Nacional; produto usa NF-e/NFC-e.
+</div>
+{% endif %}
+
+<div class="card">
+  <form class="inline" method="post" action="{{ url_for('emitir_nota') }}">
+    <div style="grid-column: span 2"><label>Tomador (cliente)</label><input name="tomador" required></div>
+    <div><label>CPF/CNPJ</label><input name="cnpj_cpf"></div>
+    <div>
+      <label>Tipo</label>
+      <select name="tipo"><option value="servico">Serviço (NFS-e)</option><option value="produto">Produto (NF-e)</option></select>
+    </div>
+    <div style="grid-column: span 2"><label>Descrição</label><input name="descricao" required></div>
+    <div><label>Valor (R$)</label><input name="valor" type="number" step="0.01" min="0" required></div>
+    <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px">
+      <input type="checkbox" name="lancar_receita" value="1" checked style="width:auto">
+      <label style="margin:0">Lançar como receita</label>
+    </div>
+    <div style="grid-column: 1 / -1"><button class="btn">Emitir nota</button></div>
+  </form>
+</div>
+
+<div class="section-head"><h2>Notas emitidas</h2></div>
+<div class="card">
+  {% if itens %}
+  <table>
+    <tr><th>#</th><th>Data</th><th>Tomador</th><th>Descrição</th><th class="num">Valor</th><th>Status</th></tr>
+    {% for n in itens %}
+    <tr>
+      <td>{{ n.id }}</td><td>{{ n.data }}</td><td>{{ n.tomador }}</td>
+      <td>{{ n.descricao }}</td><td class="num">{{ n.valor | brl }}</td>
+      <td>{{ n.status }}{% if n.link %} · <a href="{{ n.link }}" target="_blank">ver</a>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Nenhuma nota emitida ainda.</p>
+  {% endif %}
+</div>
+{% endblock %}

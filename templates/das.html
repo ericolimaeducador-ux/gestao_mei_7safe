@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>DAS — Documento de Arrecadação do Simples Nacional</h1>
+<p class="sub">Valor mensal para <strong>{{ atividade }}</strong>: {{ valor | brl }} · vence todo dia 20.</p>
+
+<div class="alert atencao">
+  O pagamento do DAS é feito no banco (Pix/boleto). Este sistema calcula, lembra do vencimento e registra o pagamento.
+  Gere a guia no Portal do Empreendedor ou no app MEI quando for pagar.
+</div>
+
+<div class="card">
+  <table>
+    <tr><th>Competência</th><th>Vencimento</th><th class="num">Valor</th><th>Status</th><th></th></tr>
+    {% for d in itens %}
+    <tr>
+      <td>{{ d.competencia }}</td>
+      <td>{{ d.vencimento }}</td>
+      <td class="num">{{ d.valor | brl }}</td>
+      <td><span class="tag {{ d.status }}">{{ d.status }}</span>
+          {% if d.data_pagamento %}<span class="muted"> em {{ d.data_pagamento }}</span>{% endif %}</td>
+      <td class="num">
+        {% if d.status != 'pago' %}
+        <form method="post" action="{{ url_for('pagar_das', competencia=d.competencia) }}" style="display:inline">
+          <button class="btn sm">marcar pago</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

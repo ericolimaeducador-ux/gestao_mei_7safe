@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Olá, {{ empresa.razao_social }}</h1>
+<p class="sub">CNPJ {{ empresa.cnpj }} · {{ empresa.municipio }}/{{ empresa.uf }} · {{ hoje.strftime('%d/%m/%Y') }}</p>
+
+<div class="grid grid-3">
+  <div class="card stat">
+    <div class="label">Faturamento do mês</div>
+    <div class="value green">{{ r.faturamento_mes | brl }}</div>
+  </div>
+  <div class="card stat">
+    <div class="label">Lucro no ano</div>
+    <div class="value {{ 'green' if r.lucro_ano >= 0 else 'red' }}">{{ r.lucro_ano | brl }}</div>
+    <div class="muted" style="font-size:13px;margin-top:4px">Despesas: {{ r.despesas_ano | brl }}</div>
+  </div>
+  <div class="card stat">
+    <div class="label">DAS mensal ({{ empresa.atividade }})</div>
+    <div class="value">{{ r.valor_das | brl }}</div>
+    <div class="muted" style="font-size:13px;margin-top:4px">vence todo dia 20</div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+<div class="grid grid-2">
+  <div class="card">
+    <h2>Limite anual do MEI — {{ r.limite.ano }}</h2>
+    <div class="bar {{ r.limite.nivel }}">
+      <span style="width: {{ [r.limite.percentual, 100] | min }}%"></span>
+    </div>
+    <p class="muted" style="margin:0">
+      {{ r.limite.faturado | brl }} de {{ r.limite.limite | brl }}
+      ({{ r.limite.percentual }}%) · restam {{ r.limite.restante | brl }}
+    </p>
+    {% if r.limite.nivel == 'estouro' %}
+      <div class="alert estouro">Atenção: você ultrapassou o teto de R$ 81.000. Risco de desenquadramento — procure seu contador.</div>
+    {% elif r.limite.nivel == 'atencao' %}
+      <div class="alert atencao">Você já passou de 80% do limite anual. Acompanhe de perto.</div>
+    {% else %}
+      <div class="alert ok">Faturamento dentro do limite.</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>DAS em aberto</h2>
+    {% if r.das_abertos %}
+      <table>
+        <tr><th>Competência</th><th>Vencimento</th><th class="num">Valor</th></tr>
+        {% for d in r.das_abertos %}
+        <tr>
+          <td>{{ d.competencia }}</td>
+          <td>
+            {{ d.vencimento }}
+            {% if d.atrasado %}<span class="tag atrasado">atrasado</span>{% endif %}
+          </td>
+          <td class="num">{{ d.valor | brl }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <p style="margin-top:14px"><a class="btn ghost sm" href="{{ url_for('das') }}">Gerenciar DAS →</a></p>
+    {% else %}
+      <p class="muted">Nenhum DAS em aberto. 🎉</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

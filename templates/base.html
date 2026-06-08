@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestão MEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="{{ url_for('dashboard') }}" aria-label="7safe - Gestao MEI">
+        <img src="{{ url_for('static', filename='logo-7safe-reverse.png') }}" alt="7safe">
+        <small>Gestão MEI</small>
+      </a>
+      <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint=='dashboard' }}">Painel</a>
+        <a href="{{ url_for('lancamentos') }}" class="{{ 'active' if request.endpoint=='lancamentos' }}">Lançamentos</a>
+        <a href="{{ url_for('das') }}" class="{{ 'active' if request.endpoint=='das' }}">DAS</a>
+        <a href="{{ url_for('notas') }}" class="{{ 'active' if request.endpoint=='notas' }}">Notas Fiscais</a>
+        <a href="{{ url_for('relatorio') }}" class="{{ 'active' if request.endpoint=='relatorio' }}">Relatório</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    {% with messages = get_flashed_messages() %}
+      {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>
